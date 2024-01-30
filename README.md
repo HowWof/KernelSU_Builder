@@ -2,8 +2,8 @@
 
 KernelSU Builder is a tool that allows you to build kernels with KernelSU support or without it. It uses GitHub Actions for automated kernel builds and supports multiple versions and configurations.
 
-[![Build Kernel](https://github.com/HowWof/KernelSU_Builder_Nashc/actions/workflows/build_kernel.yml/badge.svg)](https://github.com/HowWof/KernelSU_Builder_Nashc/actions/workflows/build_kernel.yml)
-[![Watch KernelSU](https://github.com/HowWof/KernelSU_Builder_Nashc/actions/workflows/watch_ksu.yml/badge.svg)](https://github.com/HowWof/KernelSU_Builder_Nashc/actions/workflows/watch_ksu.yml)
+[![Build Kernel](https://github.com/HowWof/KernelSU_Builder/actions/workflows/build_kernel.yml/badge.svg)](https://github.com/HowWof/KernelSU_Builder/actions/workflows/build_kernel.yml)
+[![Watch KernelSU](https://github.com/HowWof/KernelSU_Builder/actions/workflows/watch_ksu.yml/badge.svg)](https://github.com/HowWof/KernelSU_Builder/actions/workflows/watch_ksu.yml)
 
 ## Table of Contents
 - [Getting Started](#getting-started)
