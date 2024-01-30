@@ -29,4 +29,4 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add ksu_version.txt
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update to latest KernelSU release tag" && git push https://HowWof:${{ secrets.GH_PAT }}@github.com/HowWof/KernelSU_Builder_Nashc.git HEAD:master)
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update to latest KernelSU release tag" && git push https://HowWof:${{ secrets.GH_PAT }}@github.com/HowWof/KernelSU_Builder.git HEAD:master)

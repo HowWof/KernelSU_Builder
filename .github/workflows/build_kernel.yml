@@ -20,7 +20,7 @@ jobs:
       ARCH: arm64
       KBUILD_BUILD_HOST: Github-Action
       KBUILD_BUILD_USER: "HowWof Kernel Auto Builder"
-      CLANG_PATH: /home/runner/work/KernelSU_Builder_Nashc/KernelSU_Builder_Nashc/kernel/clang/bin
+      CLANG_PATH: /home/runner/work/KernelSU_Builder/KernelSU_Builder/kernel/clang/bin
 
     steps:
       - name: Checkout
@@ -62,7 +62,7 @@ jobs:
       - name: After success
         run: |
           cd kernel
-          git clone https://${{ secrets.GH_PAT }}@github.com/HowWof/KernelSU_Builder_Nashc.git ../repo
+          git clone https://${{ secrets.GH_PAT }}@github.com/HowWof/KernelSU_Builder.git ../repo
           git clone --depth=1 https://github.com/HowWof/AnyKernel3.git AnyKernel
           cp out/arch/arm64/boot/Image.gz-dtb AnyKernel
           cd AnyKernel
@@ -83,7 +83,7 @@ jobs:
           git config --global user.name "GitHub Action"
           git add .
           git commit -m "[skip ci] Add new kernel build"
-          git push https://HowWof:${{ secrets.GH_PAT }}@github.com/HowWof/KernelSU_Builder_Nashc.git HEAD:master
+          git push https://HowWof:${{ secrets.GH_PAT }}@github.com/HowWof/KernelSU_Builder.git HEAD:master
 
       - name: Create Release
         id: create_release
@@ -111,7 +111,7 @@ jobs:
         if: failure()
         run: |
           echo "Build failed"
-          git clone https://${{ secrets.GH_PAT }}@github.com/HowWof/KernelSU_Builder_Nashc.git repo
+          git clone https://${{ secrets.GH_PAT }}@github.com/HowWof/KernelSU_Builder.git repo
           cd repo
           mkdir -p ./rs/${VERSION}/${KSU}/
           rm -f ./rs/${VERSION}/${KSU}/*
@@ -120,4 +120,4 @@ jobs:
           git config --global user.name "GitHub Action"
           git add .
           git commit -m "[skip ci] Add build failed"
-          git push https://HowWof:${{ secrets.GH_PAT }}@github.com/HowWof/KernelSU_Builder_Nashc.git HEAD:master
+          git push https://HowWof:${{ secrets.GH_PAT }}@github.com/HowWof/KernelSU_Builder.git HEAD:master
