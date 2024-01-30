@@ -1,0 +1,32 @@
+name: Watch KernelSU
+on:
+  schedule:
+    - cron: '0 */12 * * *'  # Run every 12 hours
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  check-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install jq
+        run: sudo apt-get install jq
+
+      - name: Check for new release
+        id: check_release
+        run: |
+          LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/tiann/KernelSU/releases/latest" | jq -r .tag_name)
+          echo "::set-output name=release::$LATEST_RELEASE"
+
+      - name: Create file with KernelSU version
+        run: |
+          echo "${{ steps.check_release.outputs.release }}" > ksu_version.txt
+
+      - name: Commit and push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add ksu_version.txt
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update to latest KernelSU release tag" && git push https://HowWof:${{ secrets.GH_PAT }}@github.com/HowWof/KernelSU_Builder_Nashc.git HEAD:master)

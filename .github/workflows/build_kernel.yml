@@ -1,0 +1,123 @@
+name: Build Kernel
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ["LineageOS-20", "Zenitsu"]
+        ksu: ["false", "true"]
+      max-parallel: 1
+
+    env:
+      VERSION: ${{ matrix.version }}
+      KSU: ${{ matrix.ksu }}
+      ARCH: arm64
+      KBUILD_BUILD_HOST: Github-Action
+      KBUILD_BUILD_USER: "HowWof Kernel Auto Builder"
+      CLANG_PATH: /home/runner/work/KernelSU_Builder_Nashc/KernelSU_Builder_Nashc/kernel/clang/bin
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-tools zip lib32z-dev libghc-bzlib-dev pngcrush ^liblzma.* python-is-python3 libsdl1.2-dev autoconf libxml2-utils wget pkg-config unzip w3m gawk imagemagick libc6-dev gcc-multilib patchelf gzip clang subversion optipng device-tree-compiler ccache gcc ^liblz4-.* lzip rsync automake fastboot python2.7 patch zip pngquant expat lzop libswitch-perl make libcap-dev python2 adb libxml2 bison libxml-simple-perl zlib1g-dev libarchive-tools libtool squashfs-tools gperf ^lzma.* libfl-dev ncurses-dev pwgen flex libtinfo5 minicom liblz4-tool libmpfr-dev libssl-dev lib32ncurses5-dev libbz2-dev lib32z1-dev libgmp-dev git libncurses5-dev dpkg-dev libmpc-dev lftp python2-dev python3 rar git-lfs policycoreutils unrar libncurses5 libbz2-1.0 ncftp tree python-all-dev bzip2 bc ftp software-properties-common tar libgl1-mesa-dev texinfo schedtool curl libexpat1-dev llvm libc6-dev-i386 apt-utils cmake g++-multilib build-essential re2c axel maven xsltproc g++ libx11-dev libxml-sax-base-perl gnupg bash
+          sudo snap install yq jq
+          echo "/usr/lib/ccache" >> $GITHUB_PATH
+          ccache -M 5G
+
+      - name: Cache ccache files
+        uses: actions/cache@v2
+        with:
+          path: ~/.ccache
+          key: ${{ runner.os }}-ccache-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-ccache-
+
+      - name: Show ccache stats
+        run: ccache -s
+
+      - name: Run script
+        run: |
+          chmod +x clone.sh
+          ./clone.sh
+
+      - name: Update PATH
+        run: |
+          echo "${CLANG_PATH}" >> $GITHUB_PATH
+
+      - name: Compile kernel
+        run: |
+          cd kernel
+          ARCH=arm64 CROSS_COMPILE="${PWD}/clang/bin/aarch64-linux-gnu-" CROSS_COMPILE_COMPAT="${PWD}/clang/bin/arm-linux-gnueabi" CROSS_COMPILE_ARM32="${PWD}/clang/bin/arm-linux-gnueabi-" CLANG_TRIPLE=aarch64-linux-gnu- make -j$(nproc --all) LLVM=1 LLVM_IAS=1 LD=ld.lld AR=llvm-ar NM=llvm-nm AS=llvm-as OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip O=out
+
+      - name: After success
+        run: |
+          cd kernel
+          git clone https://${{ secrets.GH_PAT }}@github.com/HowWof/KernelSU_Builder_Nashc.git ../repo
+          git clone --depth=1 https://github.com/HowWof/AnyKernel3.git AnyKernel
+          cp out/arch/arm64/boot/Image.gz-dtb AnyKernel
+          cd AnyKernel
+          sed -i "s/version_of_auto_build_you_flash/$(echo $VERSION)_$(echo $KSU)/g" anykernel.sh
+          echo "KSU_VERSION=$(cat ../../ksu_version.txt)" >> $GITHUB_ENV
+          if [ "${{ matrix.ksu }}" = "true" ]; then
+            ZIP_NAME="Kernel-${VERSION}-${KSU}-${{ env.KSU_VERSION }}-${{ github.run_number }}.zip"
+          else
+            ZIP_NAME="Kernel-${VERSION}-${KSU}-${{ github.run_number }}.zip"
+          fi
+          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
+          zip -r9 $ZIP_NAME *
+          mkdir -p ../../repo/rs/${VERSION}/${KSU}/
+          rm -f ../../repo/rs/${VERSION}/${KSU}/*
+          mv $ZIP_NAME ../../repo/rs/${VERSION}/${KSU}/
+          cd ../../repo
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git add .
+          git commit -m "[skip ci] Add new kernel build"
+          git push https://HowWof:${{ secrets.GH_PAT }}@github.com/HowWof/KernelSU_Builder_Nashc.git HEAD:master
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ matrix.ksu == 'true' && env.KSU_VERSION || github.run_number }}
+          release_name: Kernel-${{ matrix.version }}-${{ matrix.ksu }}-${{ matrix.ksu == 'true' && env.KSU_VERSION || github.run_number }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./repo/rs/${{ matrix.version }}/${{ matrix.ksu }}/${{ env.ZIP_NAME }}
+          asset_name: Kernel-${{ matrix.version }}-${{ matrix.ksu }}-${{ env.KSU_VERSION }}-${{ github.run_number }}.zip
+          asset_content_type: application/zip
+
+      - name: After failure
+        if: failure()
+        run: |
+          echo "Build failed"
+          git clone https://${{ secrets.GH_PAT }}@github.com/HowWof/KernelSU_Builder_Nashc.git repo
+          cd repo
+          mkdir -p ./rs/${VERSION}/${KSU}/
+          rm -f ./rs/${VERSION}/${KSU}/*
+          touch ./rs/${VERSION}/${KSU}/Build_Failed
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git add .
+          git commit -m "[skip ci] Add build failed"
+          git push https://HowWof:${{ secrets.GH_PAT }}@github.com/HowWof/KernelSU_Builder_Nashc.git HEAD:master
