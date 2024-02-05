@@ -2,14 +2,14 @@ LineageOS-20:
   script:
     - git clone https://github.com/HowWof/android_kernel_realme_mt6785.git kernel -b LineageOS-20
     - cd kernel
-    - git clone --depth=1 https://gitlab.com/Panchajanya1999/azure-clang.git clang
+    - git clone --depth=1 https://gitlab.com/Jprimero15/lolz_clang.git -b main clang
     - make O=out ARCH=arm64 lineage-nashc_defconfig
 
 Zenitsu:
   script:
     - git clone https://github.com/Killerpac/android_kernel_realme_mt6785 kernel -b zenitsu
     - cd kernel
-    - git clone --depth=1 https://gitlab.com/Panchajanya1999/azure-clang.git clang
+    - git clone --depth=1 https://gitlab.com/Jprimero15/lolz_clang.git -b main clang
     - make O=out ARCH=arm64 lineage-nashc_defconfig
 
 KSU:
