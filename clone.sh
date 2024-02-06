@@ -1,52 +1,37 @@
 #!/bin/bash
 
-# Define color codes
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-NC='\033[0m' # No Color
+# Get version from GitHub environment variable
+version=${VERSION}
 
-# Get VERSION and KSU variables from environment variables
-VERSION=${VERSION}
-KSU=${KSU}
-
-# Parse the YAML file and get the commands for the VERSION
-IFS=$'\n' read -d '' -r -a COMMANDS < <(yq e '.["'$VERSION'"].script[]' sources.yaml)
-
-# Check if KSU is true
-if [ "$KSU" = "true" ]; then
-    # Parse the YAML file and get the commands for KSU
-    IFS=$'\n' read -d '' -r -a KSU_COMMANDS < <(yq e '.["KSU"].script[]' sources.yaml)
-    # Merge COMMANDS and KSU_COMMANDS arrays
-    COMMANDS=("${COMMANDS[@]}" "${KSU_COMMANDS[@]}")
+# Check if version is provided
+if [ -z "$version" ]
+then
+    echo "No version specified. No kernel or clang will be cloned. Exiting..."
+    exit 1
 fi
 
-# Separate the make command and create a new array for other commands
-MAKE_COMMAND=""
-NEW_COMMANDS=()
-for cmd in "${COMMANDS[@]}"; do
-    if [[ $cmd == make* ]]; then
-        MAKE_COMMAND=$cmd
-    else
-        NEW_COMMANDS+=("$cmd")
-    fi
+# Convert the YAML file to JSON
+json=$(python -c "import sys, yaml, json; json.dump(yaml.safe_load(sys.stdin), sys.stdout)" < sources.yaml)
+
+# Parse the JSON file
+kernel_commands=$(echo $json | jq -r --arg version "$version" '.[$version].kernel[]')
+clang_commands=$(echo $json | jq -r --arg version "$version" '.[$version].clang[]')
+
+# Print the commands that will be executed
+echo -e "\033[31mClone.sh will execute following commands corresponding to ${version}:\033[0m"
+echo "$kernel_commands" | while read -r command; do
+    echo -e "\033[32m$command\033[0m"
+done
+echo "$clang_commands" | while read -r command; do
+    echo -e "\033[32m$command\033[0m"
 done
 
-# Print the commands
-echo -e "${GREEN}Commands to be executed:${NC}"
-for cmd in "${NEW_COMMANDS[@]}"; do
-    echo -e "${RED}$cmd${NC}"
-done
-    echo -e "${RED}$MAKE_COMMAND${NC}"
-
-# Spacing
-echo
-
-# Execute the commands
-for cmd in "${NEW_COMMANDS[@]}"; do
-    eval "$cmd"
+# Clone the kernel and append clone path to the command
+echo "$kernel_commands" | while read -r command; do
+    eval "$command kernel"
 done
 
-# Execute the make command last
-if [[ $MAKE_COMMAND != "" ]]; then
-    eval "$MAKE_COMMAND"
-fi
+# Clone the clang and append clone path to the command
+echo "$clang_commands" | while read -r command; do
+    eval "$command kernel/clang"
+done
