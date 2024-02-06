@@ -47,7 +47,7 @@ jobs:
 
       - name: Move kernel without KernelSU support to output directory
         run: |
-          mdkir outw
+          mkdir outw
           chmod +x move.sh
           ./move.sh
 
