@@ -1,45 +1,40 @@
 #!/bin/bash
 
-# Get version from GitHub environment variable
-version=${VERSION}
+# Define some colors
+GREEN='\033[32m'
+RED='\033[31m'
+NC='\033[0m' # No Color
 
-# Check if version is provided
-if [ -z "$version" ]
-then
-    echo "No version specified. No clean will be executed. Exiting..."
-    exit 1
-fi
 
-# Convert the YAML file to JSON
+# Convert the YAML file to JSON using Python
 json=$(python -c "import sys, yaml, json; json.dump(yaml.safe_load(sys.stdin), sys.stdout)" < sources.yaml)
 
 # Check if json is empty
 if [ -z "$json" ]
 then
-    echo "Failed to convert YAML to JSON. Exiting..."
+    echo -e "${RED}Failed to convert YAML to JSON. Exiting...${NC}"
     exit 1
 fi
 
 # Parse the JSON file
-out_commands=$(echo $json | jq -r --arg version "$version" '.[$version].Clean.out[]')
-kernel_commands=$(echo $json | jq -r --arg version "$version" '.[$version].Clean.kernel[]')
-custom_commands=$(echo $json | jq -r --arg version "$version" '.[$version].Clean.custom[]')
-
-# Check if out_commands and kernel_commands are empty
-if [ -z "$out_commands" ] || [ -z "$kernel_commands" ]
-then
-    echo "Failed to parse JSON. Exiting..."
-    exit 1
-fi
+out_commands=$(echo $json | jq -r '.Clean.out[]')
+kernel_commands=$(echo $json | jq -r '.Clean.kernel[]')
+custom_commands=$(echo $json | jq -r '.Clean.custom[]')
 
 # Print the commands that will be executed
-echo -e "\033[31mClean.sh will execute following commands corresponding to ${version}:\033[0m"
+echo -e "${GREEN}Clean.sh will execute following commands:${NC}"
 echo "$out_commands" | while read -r command; do
-    echo -e "\033[32m$command\033[0m"
+    echo -e "${RED}$command${NC}"
 done
 echo "$kernel_commands" | while read -r command; do
-    echo -e "\033[32m$command\033[0m"
+    echo -e "${RED}$command${NC}"
 done
+echo "$custom_commands" | while read -r command; do
+    echo -e "${RED}$command${NC}"
+done
+
+# Enter kernel directory
+cd kernel
 
 # Execute the out commands
 echo "$out_commands" | while read -r command; do
@@ -51,15 +46,7 @@ echo "$kernel_commands" | while read -r command; do
     eval "$command"
 done
 
-# If custom command is provided, execute it
-if [ -n "$custom_commands" ]
-then
-    echo "$custom_commands" | while read -r command; do
-        echo -e "\033[32m$command\033[0m"
-    done
-
-    # Execute the custom commands
-    echo "$custom_commands" | while read -r command; do
-        eval "$command"
-    done
-fi
+# Execute the custom commands
+echo "$custom_commands" | while read -r command; do
+    eval "$command"
+done
