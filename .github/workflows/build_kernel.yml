@@ -117,19 +117,26 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ${{ github.workspace }}/${{ env.ZIP_NO_KSU }}
-            ${{ github.workspace }}/${{ env.ZIP_KSU }}
+             ${{ github.workspace }}/${{ env.ZIP_NO_KSU }}
+             ${{ github.workspace }}/${{ env.ZIP_KSU }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          release_name: ${{ github.event.inputs.version }}-${{ env.KERNELSU_VERSION }}
+          release_name: Realme 8 (nashc) Kernel Release - v${{ github.event.inputs.version }}-${{ env.KERNELSU_VERSION }}
           body: |
-            This is a release for ${{ github.event.inputs.version }}-${{ env.KERNELSU_VERSION }}.
-            - With and without KernelSU support
-            - Flash in recovery 
-            - Warning flashing zip while using realmeUI will cause bootloop
-            Build settings used:
-            ```
-            ${{ env.JSON_CONTENTS }}
-            ```
+             KernelSU Version: ${KERNELSU_VERSION}
+             Kernel Sources:
+                  ${{ each url in env.KERNEL_REPO_URL_* }}
+                 - ${{ url | replace('KERNEL_REPO_URL_', '') }} [${{ env[url] }}]
+      
+              **Installation:**
+             1. Sideloading in recovery mode.
+             2. Using an MTK client or fastboot to flash the boot image.
+             3. Refer to our [Mega Guide](https://github.com/driedpampas/realme-8-megaguide) for detailed instructions.
+      
+               **Warnings:**
+             - Do not use this kernel with the stock firmware of Realme UI; it is only compatible with custom ROMs.
+      
+             **Support Group:**
+             - Support: Ask In [Realme 8 AOSP](https://t.me/Realme8AOSPGroup) for assistance
           tag_name: ${{ github.run_id }}
           draft: false
           prerelease: false
