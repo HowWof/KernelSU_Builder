@@ -123,9 +123,6 @@ jobs:
           release_name: Realme 8 (nashc) Kernel Release - v${{ github.event.inputs.version }}-${{ env.KERNELSU_VERSION }}
           body: |
              KernelSU Version: ${KERNELSU_VERSION}
-             Kernel Sources:
-                  ${{ each url in env.KERNEL_REPO_URL_* }}
-                 - ${{ url | replace('KERNEL_REPO_URL_', '') }} [${{ env[url] }}]
       
               **Installation:**
              1. Sideloading in recovery mode.
