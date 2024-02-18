@@ -69,9 +69,15 @@ jobs:
       - name: Extract source URLs
         id: extract_sources
         run: |
-          echo "::set-output name=lineage_url::$(yq e '.LineageOS-20.kernel[0]' sources.yaml)"
-          echo "::set-output name=zenitsu_url::$(yq e '.Zenitsu.kernel[0]' sources.yaml)"
-
+          echo "Extracting source URLs..."
+          lineage_url=$(yq e '.LineageOS-20.kernel[0]' ${{ github.workspace }}/sources.yaml)
+          zenitsu_url=$(yq e '.Zenitsu.kernel[0]' ${{ github.workspace }}/sources.yaml)
+          echo "Lineage URL: $lineage_url"
+          echo "Zenitsu URL: $zenitsu_url"
+          echo "::set-output name=lineage_url::$lineage_url"
+          echo "::set-output name=zenitsu_url::$zenitsu_url"
+          echo "Source URLs extracted successfully."
+          
       - name: Compile kernel
         run: |
           chmod +x build.sh
