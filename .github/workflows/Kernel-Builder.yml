@@ -54,18 +54,18 @@ jobs:
 
       - name: Extract kernel version from Makefile
         run: |
-          MAKEFILE_PATH="${{ github.workspace }}/Makefile"
+          MAKEFILE_PATH="${{ github.workspace }}/kernel/Makefile"
           if [ -f "$MAKEFILE_PATH" ]; then
-            KERNEL_VERSION=$(grep "^VERSION" "$MAKEFILE_PATH" | awk '{print $3}')
-            KERNEL_PATCHLEVEL=$(grep "^PATCHLEVEL" "$MAKEFILE_PATH" | awk '{print $3}')
-            KERNEL_SUBLEVEL=$(grep "^SUBLEVEL" "$MAKEFILE_PATH" | awk '{print $3}')
-            FULL_KERNEL_VERSION="${KERNEL_VERSION}.${KERNEL_PATCHLEVEL}.${KERNEL_SUBLEVEL}"
-            echo "KERNEL_VERSION=${FULL_KERNEL_VERSION}" >> $GITHUB_ENV
+          KERNEL_VERSION=$(grep "^VERSION" "$MAKEFILE_PATH" | awk '{print $3}')
+          KERNEL_PATCHLEVEL=$(grep "^PATCHLEVEL" "$MAKEFILE_PATH" | awk '{print $3}')
+          KERNEL_SUBLEVEL=$(grep "^SUBLEVEL" "$MAKEFILE_PATH" | awk '{print $3}')
+          FULL_KERNEL_VERSION="${KERNEL_VERSION}.${KERNEL_PATCHLEVEL}.${KERNEL_SUBLEVEL}"
+          echo "KERNEL_VERSION=${FULL_KERNEL_VERSION}" >> $GITHUB_ENV
           else
-            echo "Makefile not found in the GitHub workspace. Contents of GitHub workspace:" >&2
-            ls -R "${{ github.workspace }}"
+          echo "Makefile not found in the kernel directory of the GitHub workspace. Contents of the kernel directory:" >&2
+           ls -R "${{ github.workspace }}/kernel"
           fi
-       
+
       - name: Compile kernel
         run: |
           chmod +x build.sh
