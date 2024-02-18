@@ -120,7 +120,7 @@ jobs:
              ${{ github.workspace }}/${{ env.ZIP_NO_KSU }}
              ${{ github.workspace }}/${{ env.ZIP_KSU }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          release_name: Realme 8 (nashc) Kernel Release - v${{ github.event.inputs.version }}-${{ env.KERNELSU_VERSION }}
+          name: Realme 8 (nashc) Kernel Release - v${{ github.event.inputs.version }}-${{ env.KERNELSU_VERSION }}
           tag_name: ${{ github.run_id }}
           body: |
              **Info:**
