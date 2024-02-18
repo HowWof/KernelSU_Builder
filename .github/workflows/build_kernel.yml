@@ -69,8 +69,8 @@ jobs:
       - name: Extract source URLs
         id: extract_sources
         run: |
-         LINEAGE_URL=$(awk '/LineageOS-20/{getline; print}' "${{ github.workspace }}/sources.yaml" | awk -F 'git clone ' '{print $2}' | awk '{print $1}')
-         ZENITSU_URL=$(awk '/Zenitsu/{getline; print}' "${{ github.workspace }}/sources.yaml" | awk -F 'git clone ' '{print $2}' | awk '{print $1}')
+         LINEAGE_URL=$(awk '/LineageOS-20:/{getline; if($1 == "-") print $2}' "${{ github.workspace }}/sources.yaml")
+         ZENITSU_URL=$(awk '/Zenitsu:/{getline; if($1 == "-") print $2}' "${{ github.workspace }}/sources.yaml")
          echo "Lineage URL: $LINEAGE_URL"
          echo "Zenitsu URL: $ZENITSU_URL"
          echo "::set-output name=lineage_url::$LINEAGE_URL"
