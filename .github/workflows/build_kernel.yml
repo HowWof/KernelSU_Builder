@@ -120,11 +120,11 @@ jobs:
              ${{ github.workspace }}/${{ env.ZIP_NO_KSU }}
              ${{ github.workspace }}/${{ env.ZIP_KSU }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          name: Realme 8 (nashc) Kernel Release - v${{ github.event.inputs.version }}-${{ env.KERNELSU_VERSION }}
+          name: Realme 8 (nashc) Kernel Release - ${{ env.KERNELSU_VERSION }}
           tag_name: ${{ github.run_id }}
           body: |
              **Info:**
-             KernelSU Version: ${{ env.KERNELSU_VERSION }}.
+              - KernelSU Version: ${{ env.KERNELSU_VERSION }}.
       
              **Installation:**
              1. Sideloading in recovery mode.
