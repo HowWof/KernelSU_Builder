@@ -66,9 +66,13 @@ jobs:
             ls -R "${{ github.workspace }}/kernel"
           fi
 
-      - name: Extract URLs from sources
+      - name: Extract sources
+        run: bash ExSource.sh
+        
+      - name: Display URLs
         run: |
-           bash ExSource.sh
+         echo "Lineage URL: ${{ env.lineage_url }}"
+         echo "Zenitsu URL: ${{ env.zenitsu_url }}"
     
       - name: Compile kernel
         run: |
