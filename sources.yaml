@@ -48,6 +48,6 @@ KernelSU:
 AnyKernel3:
   version:
     nashc:
-      - git clone https://github.com/HowWof/AnyKernel3.git -b master
+      - git clone https://github.com/RipperHybrid/AnyKernel3.git -b master
     test:
       - echo "Test Success!"
