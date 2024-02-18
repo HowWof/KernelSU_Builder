@@ -69,7 +69,6 @@ jobs:
       - name: Extract URLs from sources
         run: |
            bash ExSource.sh
-           working-directory: ${{ github.workspace }}
     
       - name: Compile kernel
         run: |
