@@ -1,33 +1,59 @@
-# KernelSU Builder
-
-KernelSU Builder is a tool that allows you to build kernels with KernelSU support or without it. It uses GitHub Actions for automated kernel builds and supports multiple versions and configurations.
+# Kernel Builder
 
 [![Kernel Builder](https://github.com/RipperHybrid/KernelSU_Builder/actions/workflows/build_kernel.yml/badge.svg)](https://github.com/RipperHybrid/KernelSU_Builder/actions/workflows/build_kernel.yml)
 [![Watch KernelSU](https://github.com/RipperHybrid/KernelSU_Builder/actions/workflows/watch_ksu.yml/badge.svg)](https://github.com/RipperHybrid/KernelSU_Builder/actions/workflows/watch_ksu.yml)
 
-## Table of Contents
-- [Getting Started](#getting-started)
-- [Adding a Device](#adding-a-device)
-- [Flashing the Kernel](#flashing-the-kernel)
+This GitHub Action workflow automates the process of building a custom kernel for the Realme 8 (nashc) device. It integrates necessary dependencies, compiles the kernel, adds KernelSU support, and releases them on GitHub.
 
-## Getting Started
+## How to Use
 
-Follow these steps to use this Builder:
+1. **Fork Repository:**
+   Fork this repository to your GitHub account.
 
-1. Fork this repository.
-2. Update the `sources.yaml` file with your build requirements.
-3. Set up the necessary secrets in your repository settings. The required secret is `GH_PAT`: A personal access token with the `repo` scope.
-4. Wait for the build to finish.
+2. **Configure Secrets:**
+   - Add your GitHub token as `GITHUB_TOKEN` in the repository secrets to enable releases.
 
-## Adding a Device
+3. **Trigger Workflow:**
+   - The workflow can be triggered manually through the Actions tab in your repository or automatically on each push.
 
-1. Edit anykernel.sh and change the `DEVICE` variable to your device codename.
+4. **Customization:**
+   - Modify the workflow as needed for specific kernel configurations, dependencies, or release details.
 
-## Flashing the Kernel
+5. **Release Management:**
+   - Ensure to update release information such as kernel versions, installation instructions, warnings, and support group details in the workflow file before creating a release.
 
-To flash the kernel onto your device:
+6. **Testing:**
+   - Before creating a release, verify the compiled kernel files using the provided testing step in the workflow.
 
-1. Download the kernel release from GitHub.
-2. Use your preferred recovery to flash the kernel.
-3. If you want root access, flash KernelSU version.
-4. Reboot your device.
+7. **Contributions:**
+   - Contributions and improvements to the workflow are welcome through pull requests.
+
+## Workflow Overview
+
+- **Dependencies Setup:**
+  - Installs necessary build dependencies and tools for kernel compilation.
+  - Sets up ccache for faster subsequent builds.
+
+- **Cloning Sources:**
+  - Clones required repositories for clang and kernel sources.
+
+- **Kernel Compilation:**
+  - Compiles the kernel with specified configurations.
+  - Extracts kernel version from the Makefile.
+
+- **KernelSU Support:**
+  - Adds support for KernelSU and compiles the kernel again.
+
+- **Release Creation:**
+  - Creates a GitHub release with relevant kernel information, installation instructions, warnings, and support group details.
+
+## Support and Feedback
+
+- For questions or assistance, feel free to reach out to the [Realme 8 AOSP](https://t.me/Realme8AOSPGroup) support group.
+- Report issues or suggestions directly through GitHub's issue tracker.
+
+## Disclaimer
+
+- This workflow is provided as-is without any warranties. Use it at your own risk.
+- Ensure compatibility and follow device-specific guidelines before flashing custom kernels.
+- Read and understand the installation instructions and warnings before proceeding with kernel installation.
