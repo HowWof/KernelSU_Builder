@@ -4,6 +4,7 @@
 echo "Contents of sources.yaml:"
 cat sources.yaml
 
+
 # Convert the YAML file to JSON
 json=$(python -c "import sys, yaml, json; json.dump(yaml.safe_load(sys.stdin), sys.stdout)" < sources.yaml)
 
@@ -18,3 +19,7 @@ ZENITSU_URL=$(echo "$json" | jq -r '.Zenitsu.kernel[0] | split(" ")[2]')
 # Print extracted URLs
 echo "Lineage URL: $LINEAGE_URL"
 echo "Zenitsu URL: $ZENITSU_URL"
+
+# Output extracted URLs
+echo "::set-output name=lineage_url::$LINEAGE_URL"
+echo "::set-output name=zenitsu_url::$ZENITSU_URL"
