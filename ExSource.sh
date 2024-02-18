@@ -20,6 +20,8 @@ ZENITSU_URL=$(echo "$json" | jq -r '.Zenitsu.kernel[0] | split(" ")[2]')
 echo "Lineage URL: $LINEAGE_URL"
 echo "Zenitsu URL: $ZENITSU_URL"
 
-# Output extracted URLs
-echo "::set-output name=lineage_url::$LINEAGE_URL"
-echo "::set-output name=zenitsu_url::$ZENITSU_URL"
+# Set the extracted URLs as output parameters using the new method
+{
+  echo "lineage_url=$LINEAGE_URL"
+  echo "zenitsu_url=$ZENITSU_URL"
+} >> "$GITHUB_OUTPUT"
