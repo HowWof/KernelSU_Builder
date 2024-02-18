@@ -69,11 +69,6 @@ jobs:
       - name: Extract sources
         run: bash ExSource.sh
         
-      - name: Display URLs
-        run: |
-         echo "Lineage URL: ${{ env.lineage_url }}"
-         echo "Zenitsu URL: ${{ env.zenitsu_url }}"
-    
       - name: Compile kernel
         run: |
           chmod +x build.sh
@@ -148,8 +143,8 @@ jobs:
                 - Zenitsu: ${{ env.KERNEL_VERSION }}
       
              **Source URLs:**
-             - LineageOS-20: ${{ steps.extract_sources.outputs.lineage_url }}
-             - Zenitsu: ${{ steps.extract_sources.outputs.zenitsu_url }}
+             - LineageOS-20: ${{ env.lineage_url }}
+             - Zenitsu: ${{ env.zenitsu_url }}
       
              **Installation:**
              1. Sideloading in recovery mode.
