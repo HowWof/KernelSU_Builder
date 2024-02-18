@@ -63,9 +63,9 @@ jobs:
             echo "KERNEL_VERSION=${FULL_KERNEL_VERSION}" >> $GITHUB_ENV
           else
             echo "Makefile not found in the GitHub workspace. Contents of GitHub workspace:" >&2
-            ls -al "${{ github.workspace }}"
+            ls -R "${{ github.workspace }}"
           fi
-
+       
       - name: Compile kernel
         run: |
           chmod +x build.sh
