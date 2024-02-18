@@ -12,8 +12,8 @@ echo "JSON content:"
 echo "$json"
 
 # Extract URLs from the JSON content
-LINEAGE_URL=$(echo "$json" | jq -r '.LineageOS-20.kernel[0]')
-ZENITSU_URL=$(echo "$json" | jq -r '.Zenitsu.kernel[0]')
+LINEAGE_URL=$(echo "$json" | jq -r '.LineageOS-20.kernel[0] | split(" ")[2]')
+ZENITSU_URL=$(echo "$json" | jq -r '.Zenitsu.kernel[0] | split(" ")[2]')
 
 # Print extracted URLs
 echo "Lineage URL: $LINEAGE_URL"
