@@ -21,7 +21,5 @@ echo "Lineage URL: $LINEAGE_URL"
 echo "Zenitsu URL: $ZENITSU_URL"
 
 # Set the extracted URLs as output parameters using the new method
-{
-  echo "lineage_url=$LINEAGE_URL"
-  echo "zenitsu_url=$ZENITSU_URL"
-} >> "$GITHUB_OUTPUT"
+echo "lineage_url=$LINEAGE_URL" >> $GITHUB_ENV
+echo "zenitsu_url=$ZENITSU_URL" >> $GITHUB_ENV
