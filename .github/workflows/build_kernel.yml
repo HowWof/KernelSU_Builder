@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        version: ["LineageOS-20", "Zenitsu"]
+        version: ["LineageOS-20", "Zenitsu", "DivestOS-13"]
 
     env:
       VERSION: ${{ matrix.version }}
@@ -140,10 +140,12 @@ jobs:
               - Kernel Versions:
                 - LineageOS-20: ${{ env.KERNEL_VERSION }}
                 - Zenitsu: ${{ env.KERNEL_VERSION }}
-      
+                - DivestOS-13: ${{ env.KERNEL_VERSION }}      
+
              **Source URLs:**
              - LineageOS-20: ${{ env.lineage_url }}
              - Zenitsu: ${{ env.zenitsu_url }}
+             - DivestOS-13: ${{ env.divest_url }}
       
              **Installation:**
              1. Sideloading in recovery mode.
