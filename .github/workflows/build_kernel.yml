@@ -10,7 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: true
       matrix:
         version: ["LineageOS-20", "Zenitsu", "DivestOS-13"]
 
