@@ -54,10 +54,11 @@ Clean:
   custom:
     - git status
 
+# Stable-pin version of KernelSU is used by KernelSU.sh to replace placeholder (kernelsu-version) with the newest stable version from ksu_version.txt
 KernelSU:
   version:
     stable-pin:
-      - curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s ${kernelsu-version}
+      - curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s kernelsu-version
     stable:
       - curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
     unstable:
