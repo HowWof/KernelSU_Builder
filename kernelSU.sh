@@ -7,6 +7,7 @@ NC='\033[0m' # No Color
 
 # Get version from GitHub environment variable
 version=${VERSION}
+kernelsu-version=${KERNELSU_VERSION}
 
 # Convert the YAML file to JSON using Python
 json=$(python -c "import sys, yaml, json; json.dump(yaml.safe_load(sys.stdin), sys.stdout)" < sources.yaml)
