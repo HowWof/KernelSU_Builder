@@ -1,7 +1,7 @@
 name: Watch KernelSU
 on:
   schedule:
-    - cron: '0 */12 * * *'  # Run every 12 hours
+    - cron: '0 */3 * * *'  # Run every 3 hours
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
@@ -18,15 +18,35 @@ jobs:
         id: check_release
         run: |
           LATEST_RELEASE=$(curl --silent "https://api.github.com/repos/tiann/KernelSU/releases/latest" | jq -r .tag_name)
-          echo "::set-output name=release::$LATEST_RELEASE"
+          CURRENT_RELEASE=$(cat ksu_version.txt || true)
+          if [ "$LATEST_RELEASE" != "$CURRENT_RELEASE" ]; then
+            echo "::set-output name=release::$LATEST_RELEASE"
+            echo "::set-output name=update_needed::true"
+          else
+            echo "::set-output name=update_needed::false"
+          fi
 
       - name: Create file with KernelSU version
+        if: steps.check_release.outputs.update_needed == 'true'
         run: |
           echo "${{ steps.check_release.outputs.release }}" > ksu_version.txt
 
       - name: Commit and push
+        if: steps.check_release.outputs.update_needed == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add ksu_version.txt
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update to latest KernelSU release tag" && git push https://HowWof:${{ secrets.GH_PAT }}@github.com/HowWof/KernelSU_Builder.git HEAD:master)
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update to latest KernelSU release tag" && git push https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:$BRANCH_NAME)
+
+      - name: Trigger Build Kernel workflow
+        if: steps.check_release.outputs.update_needed == 'true'
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          event-type: trigger-KernelSU-build
+
+      - name: Print dispatch response
+        run: echo "${{ steps.dispatch.outputs.response }}"

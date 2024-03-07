@@ -3,6 +3,8 @@ name: KernelSU Builder
 on:
   push:
   workflow_dispatch:
+  repository_dispatch:
+    types: [trigger-KernelSU-build]
 
 jobs:
   build:
@@ -50,23 +52,6 @@ jobs:
       - name: Add Clang to PATH
         run: |
           echo "${CLANG_PATH}" >> $GITHUB_PATH
-
-      - name: Extract kernel version from Makefile
-        run: |
-          MAKEFILE_PATH="${{ github.workspace }}/kernel/Makefile"
-          if [ -f "$MAKEFILE_PATH" ]; then
-            KERNEL_VERSION=$(grep "^VERSION" "$MAKEFILE_PATH" | awk '{print $3}')
-            KERNEL_PATCHLEVEL=$(grep "^PATCHLEVEL" "$MAKEFILE_PATH" | awk '{print $3}')
-            KERNEL_SUBLEVEL=$(grep "^SUBLEVEL" "$MAKEFILE_PATH" | awk '{print $3}')
-            FULL_KERNEL_VERSION="${KERNEL_VERSION}.${KERNEL_PATCHLEVEL}.${KERNEL_SUBLEVEL}"
-            echo "KERNEL_VERSION=${FULL_KERNEL_VERSION}" >> $GITHUB_ENV
-          else
-            echo "Makefile not found in the kernel directory of the GitHub workspace. Contents of the kernel directory:" >&2
-            ls -R "${{ github.workspace }}/kernel"
-          fi
-
-      - name: Extract sources
-        run: bash ExSource.sh
         
       - name: Compile kernel
         run: |
@@ -125,6 +110,11 @@ jobs:
           chmod +x makezip.sh
           ./makezip.sh
 
+      - name: Extract info for release
+        run: |
+          chmod +x extract.sh
+          ./extract.sh
+
       - name: Make a release
         uses: softprops/action-gh-release@v1
         with:
@@ -132,29 +122,21 @@ jobs:
              ${{ github.workspace }}/${{ env.ZIP_NO_KSU }}
              ${{ github.workspace }}/${{ env.ZIP_KSU }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          name: Realme 8 (nashc) Kernel Release - ${{ env.KERNELSU_VERSION }}
+          name: KernelSU Release - ${{ env.KERNELSU_VERSION }}
           tag_name: ${{ github.run_id }}
           body: |
              **Info:**
               - KernelSU Version: ${{ env.KERNELSU_VERSION }}.
-              - Kernel Versions:
-                - LineageOS-20: ${{ env.KERNEL_VERSION }}
-                - Zenitsu: ${{ env.KERNEL_VERSION }}
-                - DivestOS-13: ${{ env.KERNEL_VERSION }}      
-
-             **Source URLs:**
-             - LineageOS-20: ${{ env.lineage_url }}
-             - Zenitsu: ${{ env.zenitsu_url }}
-             - DivestOS-13: ${{ env.divest_url }}
-      
-             **Installation:**
-             1. Sideloading in recovery mode.
-             2. Refer to our [Mega Guide](https://github.com/driedpampas/realme-8-megaguide) for detailed instructions.
-      
-             **Warnings:**
-             - Do not use this kernel with the stock firmware of Realme UI; it is only compatible with custom ROMs.
-      
-             **Support Group:**
-             - Support: Ask In [Realme 8 AOSP](https://t.me/Realme8AOSPGroup) for assistance
+              
+              **Installation:**
+              - Download desired zip file.
+              - Flash the zip file in recovery using sideload or any other method.
+            
+              <details>
+                <summary>Build Settings</summary>
+                  ```
+                  ${{ env.buildsettings }}
+                  ```
+              </details>
           draft: false
           prerelease: false
