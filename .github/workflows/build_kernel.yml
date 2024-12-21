@@ -1,4 +1,4 @@
-nme: KernelSU Builder
+name: KernelSU Builder
 
 on:
   push:
