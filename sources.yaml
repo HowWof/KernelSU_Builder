@@ -1,68 +1,19 @@
-LineageOS-20:
+A22-5G:
   kernel:
-    - git clone https://github.com/HowWof/android_kernel_realme_mt6785.git -b lineage-20
+    - git clone https://github.com/Dan13254/android_kernel_samsung_a226b.git -b master
   clang:
     - git clone --depth=1 https://gitlab.com/Jprimero15/lolz_clang.git -b main
   config:
-    - make O=out ARCH=arm64 lineage-nashc_defconfig
+    - make O=out ARCH=arm64 a22x_defconfig
   build:
     - ARCH=arm64 CROSS_COMPILE="${PWD}/clang/bin/aarch64-linux-gnu-" CROSS_COMPILE_COMPAT="${PWD}/clang/bin/arm-linux-gnueabi" CROSS_COMPILE_ARM32="${PWD}/clang/bin/arm-linux-gnueabi-" CLANG_TRIPLE=aarch64-linux-gnu- make -j$(nproc --all) LLVM=1 LLVM_IAS=1 LD=ld.lld AR=llvm-ar NM=llvm-nm AS=llvm-as OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip O=out
   target:
     - out/arch/arm64/boot/Image.gz-dtb
   anykernel:
-    - nashc
+    - a22
   kernelSU:
     - stable-pin
 
-Zenitsu:
-  kernel:
-    - git clone https://github.com/Killerpac/android_kernel_realme_mt6785 -b zenitsu-bak
-  clang:
-    - git clone --depth=1 https://gitlab.com/Jprimero15/lolz_clang.git -b main
-  config:
-    - make O=out ARCH=arm64 lineage-nashc_defconfig
-  build:
-    - ARCH=arm64 CROSS_COMPILE="${PWD}/clang/bin/aarch64-linux-gnu-" CROSS_COMPILE_COMPAT="${PWD}/clang/bin/arm-linux-gnueabi" CROSS_COMPILE_ARM32="${PWD}/clang/bin/arm-linux-gnueabi-" CLANG_TRIPLE=aarch64-linux-gnu- make -j$(nproc --all) LLVM=1 LLVM_IAS=1 LD=ld.lld AR=llvm-ar NM=llvm-nm AS=llvm-as OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip O=out
-  target:
-    - out/arch/arm64/boot/Image.gz-dtb
-  anykernel:
-    - nashc
-  kernelSU:
-    - stable-pin
-
-DivestOS-13:
-  kernel:
-    - git clone https://github.com/HowWof/android_kernel_realme_mt6785.git -b divest-13
-  clang:
-    - git clone --depth=1 https://gitlab.com/Jprimero15/lolz_clang.git -b main
-  config:
-    - make O=out ARCH=arm64 lineage-nashc_defconfig
-  build:
-    - ARCH=arm64 CROSS_COMPILE="${PWD}/clang/bin/aarch64-linux-gnu-" CROSS_COMPILE_COMPAT="${PWD}/clang/bin/arm-linux-gnueabi" CROSS_COMPILE_ARM32="${PWD}/clang/bin/arm-linux-gnueabi-" CLANG_TRIPLE=aarch64-linux-gnu- make -j$(nproc --all) LLVM=1 LLVM_IAS=1 LD=ld.lld AR=llvm-ar NM=llvm-nm AS=llvm-as OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip O=out
-  target:
-    - out/arch/arm64/boot/Image.gz-dtb
-  anykernel:
-    - nashc
-  kernelSU:
-    - stable-pin
-
-
-Sage-Android-14:
-  kernel:
-    - git clone https://github.com/Killerpac/android_kernel_realme_mt6785.git -b udc
-  clang:
-    - git clone --depth=1 https://gitlab.com/Jprimero15/lolz_clang.git -b main
-  config:
-    - make O=out ARCH=arm64 lineage-nashc_defconfig
-  build:
-    - ARCH=arm64 CROSS_COMPILE="${PWD}/clang/bin/aarch64-linux-gnu-" CROSS_COMPILE_COMPAT="${PWD}/clang/bin/arm-linux-gnueabi" CROSS_COMPILE_ARM32="${PWD}/clang/bin/arm-linux-gnueabi-" CLANG_TRIPLE=aarch64-linux-gnu- make -j$(nproc --all) LLVM=1 LLVM_IAS=1 LD=ld.lld AR=llvm-ar NM=llvm-nm AS=llvm-as OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip O=out
-  target:
-    - out/arch/arm64/boot/Image.gz-dtb
-  anykernel:
-    - nashc
-  kernelSU:
-    - stable-pin
-    
 Clean:
   out:
     - rm -rf out
@@ -71,19 +22,7 @@ Clean:
   custom:
     - git status
 
-# Stable-pin version of KernelSU is used by KernelSU.sh to replace placeholder (kernelsu-version) with the newest stable version from ksu_version.txt
 KernelSU:
   version:
     stable-pin:
       - curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s kernelsu-version
-    stable:
-      - curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
-    unstable:
-      - curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -s main
-
-AnyKernel3:
-  version:
-    nashc:
-      - git clone https://github.com/HowWof/AnyKernel3.git -b master
-    test:
-      - echo "Test Success!"
