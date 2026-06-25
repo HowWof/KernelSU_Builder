@@ -1,6 +1,7 @@
 LineageOS-20:
   kernel:
-    - git clone https://github.com/HowWof/android_kernel_realme_mt6785.git -b lineage-20
+    - git clone
+https://github.com/LineageOS/android_kernel_razer_sg8175p -b lineage-23.2
   clang:
     - git clone --depth=1 https://gitlab.com/Jprimero15/lolz_clang.git -b main
   config:
